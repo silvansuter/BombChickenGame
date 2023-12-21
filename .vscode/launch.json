@@ -1,0 +1,26 @@
+{
+    "type": "java",
+    "name": "Launch Current File",
+    "request": "launch",
+    "mainClass": "${file}",
+    "projectName": "your_project_name",
+    "classPaths": [
+        "./resources"
+    ],
+    "configurations": [
+        {
+            "type": "java",
+            "name": "ClickGame",
+            "request": "launch",
+            "mainClass": "com.game.ClickGame",
+            "projectName": "new_71cf1067"
+        },
+        {
+            "type": "java",
+            "name": "ClickGame",
+            "request": "launch",
+            "mainClass": "src.main.java.com.game.ClickGame",
+            "projectName": "new_71cf1067"
+        }
+    ]
+}
