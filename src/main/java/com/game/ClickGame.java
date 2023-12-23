@@ -13,7 +13,7 @@ public class ClickGame extends JFrame {
     private final GamePanel gamePanel;
 
     public ClickGame() {
-        super("Click Game");
+        super("Bombs 'n' Chicks");
         gamePanel = new GamePanel();
         add(gamePanel);
         setSize(WIDTH, HEIGHT);
