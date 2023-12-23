@@ -72,13 +72,15 @@ public class GamePanel extends JPanel {
         int pointDiameter = 30;
         int x = random.nextInt(getWidth() - pointDiameter);
         int y = random.nextInt(getHeight() - pointDiameter);
-        int timeTillDie = random.nextInt(50, 500)/speedup();
+        int timeTillDie = random.nextInt(100, 500)/speedup();
         int determineType = random.nextInt(100);
         if (determineType <= 80) {
-            entities.add(new Entity(x, y, "bomb", timeTillDie));
+            entities.add(new Bomb(x, y, timeTillDie));
             playSound("BombComing.wav");
         } else {
-            entities.add(new Entity(x, y, "chicken", timeTillDie));
+            int speedX = random.nextInt(5*speedup());
+            int speedY = random.nextInt(5*speedup());
+            entities.add(new Chicken(x, y, 3*timeTillDie, speedX, speedY));
             playSound("ChickenSound.wav");
         }
         scheduleNextSpawn();
@@ -89,13 +91,17 @@ public class GamePanel extends JPanel {
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
             entity.decrementTimeTillDie();
-            if (entity.isBomb() && entity.isTimeUp()) {
+            if (entity instanceof Bomb && entity.isTimeUp()) {
                 playSound("BombDetonating.wav");
                 gameOver("Bomb exploded!");
                 return;
             }
-            else if (entity.isChicken() && entity.isTimeUp()) {
-                iterator.remove();
+            else if (entity instanceof Chicken) {
+                Chicken chickenEntity = (Chicken) entity;
+                chickenEntity.updatePosition();
+                if (chickenEntity.isTimeUp()) {
+                    iterator.remove();
+                }
             }
         }
         timeElapsed++;
@@ -110,10 +116,10 @@ public class GamePanel extends JPanel {
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
             if (isEntityClicked(entity, mouseX, mouseY)) {
-                if (entity.isBomb()) {
+                if (entity instanceof Bomb) {
                     iterator.remove();
                     score++;
-                } else if (entity.isChicken()) {
+                } else if (entity instanceof Chicken) {
                     playSound("ChickenSquashed.wav");
                     gameOver("Squashed a chicken!");
                     return;
@@ -182,7 +188,6 @@ public class GamePanel extends JPanel {
         clip.start();
     }
     
-
     public void loadSounds() {
         String[] soundNames = { "BombComing.wav", "BombDetonating.wav", "ChickenSound.wav", "ChickenSquashed.wav" };
         for (String soundName : soundNames) {

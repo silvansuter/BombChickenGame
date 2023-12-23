@@ -2,24 +2,25 @@ package com.game;
 
 import java.awt.Color;
 
-public class Entity {
+public abstract class Entity {
     private int x;
     private int y;
-    private String type;
     private int startTimeTillDie;
     private int timeTillDie;
 
-    public Entity(int x, int y, String type, int timeTillDie) {
+    public Entity(int x, int y, int timeTillDie) {
         this.x = x;
         this.y = y;
-        this.type = type;
         this.startTimeTillDie = timeTillDie;
         this.timeTillDie = timeTillDie;
     }
 
     public int getX() { return x; }
     public int getY() { return y; }
-    public String getType() { return type; }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    public int getTimeTillDie() { return timeTillDie; }
+    public int getStartTimeTillDie() { return startTimeTillDie; }
 
     public void decrementTimeTillDie() {
         if (timeTillDie > 0) {
@@ -31,21 +32,5 @@ public class Entity {
         return timeTillDie <= 0;
     }
 
-    public boolean isBomb() {
-        return "bomb".equals(type);
-    }
-
-    public boolean isChicken() {
-        return "chicken".equals(type);
-    }
-
-    public Color getColor() {
-        if ("chicken".equals(type)) {
-            return Color.BLUE;
-        } else if ("bomb".equals(type)) {
-            float ratio = (float) timeTillDie / startTimeTillDie;
-            return new Color(1.0f, 0.0f, 0.0f, ratio); // Red color with varying alpha based on time ratio
-        }
-        return Color.BLACK; // Default color, in case of an unknown type
-    }
+    public abstract Color getColor();
 }
