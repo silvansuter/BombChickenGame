@@ -1,31 +1,47 @@
 package com.game;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-import java.lang.Math;
 import java.util.HashMap;
 import java.util.Map;
+
+import java.lang.Math;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
 import java.io.IOException;
+
 import java.net.URL;
 
 
 public class GamePanel extends JPanel {
-    private final ArrayList<Entity> entities;
+    private ArrayList<Entity> entities;
     private final Random random;
     private int score;
-    private boolean isGameOver;
+    private int highScore;
     private int timeElapsed = 0;
+
+    private boolean isGameOver;
+    private boolean isMainMenu;
+    private boolean muteSounds;
+
     private Map<String, Clip> soundClips = new HashMap<>();
+
+    private JMenuBar menuBar;
+    private JMenu menu;
+    private JMenuItem menuItemStart;
+    private JMenuItem menuItemExit;
+
 
     // Initialize and store timers as fields so you can stop them
     Timer spawnTimer = new Timer(1000, e -> spawnEntity());
@@ -37,10 +53,47 @@ public class GamePanel extends JPanel {
         random = new Random();
         score = 0;
         isGameOver = false;
+        isMainMenu = true;
+        muteSounds = false;
 
         loadSounds();
 
         setPreferredSize(new Dimension(800, 600));
+
+        requestFocusInWindow();
+
+        setFocusable(true);
+        requestFocusInWindow();
+
+        returnToMainMenu();
+    }
+
+    private void createMenu() {
+        // Create the menu bar
+        menuBar = new JMenuBar();
+
+        // Build the menu
+        menu = new JMenu("Options");
+        menuBar.add(menu);
+
+        // Menu items
+        menuItemStart = new JMenuItem("Start Game");
+        menuItemStart.addActionListener(e -> startGame());
+        menu.add(menuItemStart);
+
+        menuItemExit = new JMenuItem("Exit");
+        menuItemExit.addActionListener(e -> System.exit(0));
+        menu.add(menuItemExit);
+    }
+
+    private void startGame() {
+        this.removeAll();
+        createMenu();
+        this.add(menuBar, BorderLayout.SOUTH);
+
+        isGameOver = false;
+        score = 0;
+        entities = new ArrayList<>();
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -50,8 +103,6 @@ public class GamePanel extends JPanel {
             }
         });
 
-        requestFocusInWindow();
-
         // Timer to spawn points
         scheduleNextSpawn();
 
@@ -59,6 +110,8 @@ public class GamePanel extends JPanel {
         refreshTimer.start();
 
         updateEntitiesTimer.start();
+
+        repaint();
     }
 
     private void scheduleNextSpawn() {
@@ -72,7 +125,7 @@ public class GamePanel extends JPanel {
         int pointDiameter = 30;
         int x = random.nextInt(getWidth() - pointDiameter);
         int y = random.nextInt(getHeight() - pointDiameter);
-        int timeTillDie = random.nextInt(100, 500)/speedup();
+        int timeTillDie = random.nextInt(200, 500)/speedup();
         int determineType = random.nextInt(100);
         if (determineType <= 80) {
             entities.add(new Bomb(x, y, timeTillDie));
@@ -145,15 +198,102 @@ public class GamePanel extends JPanel {
     
     private void gameOver(String message) {
         isGameOver = true;
-
+    
         // Stop the timers
         spawnTimer.stop();
         refreshTimer.stop();
         updateEntitiesTimer.stop();
+    
+        // Add the game over screen to the panel
+        GameOverScreen gameOverScreen = new GameOverScreen(message);
+        gameOverScreen.setBounds(0, 0, getWidth(), getHeight());
+        add(gameOverScreen);
+        requestFocusInWindow();
+        repaint();
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    if (isGameOver) {
+                        // Logic to return to main menu
+                        isGameOver = false;
+                        isMainMenu = true;
+                        returnToMainMenu();
+                    }
+                }
+            }
+        });
+    }
 
-        // Show the game over message
-        JOptionPane.showMessageDialog(this, message);
-        System.exit(0);
+    private class GameOverScreen extends JComponent {
+
+        String message;
+
+        public GameOverScreen(String message) {
+            super();
+            this.message = message;
+        }
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Draw the game over screen
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("GAME OVER", getWidth() / 2 - 100, getHeight() / 2 - 50);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString(message,  getWidth() / 2 - 100, getHeight() / 2 - 20); // score is from GamePanel
+            g.drawString("Score: " + score, getWidth() / 2 - 50, getHeight() / 2); // score is from GamePanel
+            g.drawString("Press SPACE to return to the Main Menu", getWidth() / 2 - 150, getHeight() / 2 + 50);
+        }
+    }
+
+    private class MainMenuScreen extends JComponent {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Draw the game over screen
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("CHICKS 'N' BOMBS", getWidth() / 2 - 100, getHeight() / 2 - 50);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("HighScore: " + highScore, getWidth() / 2 - 50, getHeight() / 2); // score is from GamePanel
+            g.drawString("Press SPACE to Start", getWidth() / 2 - 150, getHeight() / 2 + 50);
+        }
+    }
+
+    private void returnToMainMenu() {
+        isMainMenu = true;
+        // Remove all components from the GamePanel
+        this.removeAll();
+
+        // Ensure the MainMenuScreen is visible and added correctly
+        MainMenuScreen mainMenuScreen = new MainMenuScreen();
+        mainMenuScreen.setPreferredSize(new Dimension(800, 600)); // for example
+        this.setLayout(new BorderLayout()); // Using BorderLayout for simplicity
+        this.add(mainMenuScreen, BorderLayout.CENTER);
+
+        // Refresh the panel
+        this.revalidate();
+        this.repaint();
+
+         // Request focus so the GamePanel can detect key presses
+        requestFocusInWindow();
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    if (isMainMenu) {
+                        isMainMenu = false;
+                        startGame();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -171,10 +311,14 @@ public class GamePanel extends JPanel {
         }
     
         g2d.setColor(Color.BLACK);
-        g2d.drawString("Score: " + score, 10, 50);
+        g2d.drawString("Score: " + score, 10, 15);
     }
 
     public void playSound(String soundFileName) {
+        if (muteSounds) {
+            return;
+        }
+
         Clip clip = soundClips.get(soundFileName);
         if (clip == null) {
             System.err.println("Sound not preloaded: " + soundFileName);
