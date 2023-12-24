@@ -28,7 +28,7 @@ public class GamePanel extends JPanel {
     private ArrayList<Entity> entities;
     private final Random random;
     private int score;
-    private int highScore;
+    private int highScore = 0;
     private int timeElapsed = 0;
 
     private boolean isGameOver;
@@ -60,10 +60,13 @@ public class GamePanel extends JPanel {
 
         setPreferredSize(new Dimension(800, 600));
 
-        requestFocusInWindow();
-
         setFocusable(true);
-        requestFocusInWindow();
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                handleKeyPress(e);
+            }
+        });
 
         returnToMainMenu();
     }
@@ -125,7 +128,7 @@ public class GamePanel extends JPanel {
         int pointDiameter = 30;
         int x = random.nextInt(getWidth() - pointDiameter);
         int y = random.nextInt(getHeight() - pointDiameter);
-        int timeTillDie = random.nextInt(200, 500)/speedup();
+        int timeTillDie = random.nextInt(350, 500)/speedup();
         int determineType = random.nextInt(100);
         if (determineType <= 80) {
             entities.add(new Bomb(x, y, timeTillDie));
@@ -197,7 +200,11 @@ public class GamePanel extends JPanel {
     }
     
     private void gameOver(String message) {
+        this.removeAll();
         isGameOver = true;
+        if (score > highScore) {
+            highScore = score;
+        }
     
         // Stop the timers
         spawnTimer.stop();
@@ -210,19 +217,6 @@ public class GamePanel extends JPanel {
         add(gameOverScreen);
         requestFocusInWindow();
         repaint();
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    if (isGameOver) {
-                        // Logic to return to main menu
-                        isGameOver = false;
-                        isMainMenu = true;
-                        returnToMainMenu();
-                    }
-                }
-            }
-        });
     }
 
     private class GameOverScreen extends JComponent {
@@ -282,18 +276,6 @@ public class GamePanel extends JPanel {
 
          // Request focus so the GamePanel can detect key presses
         requestFocusInWindow();
-
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    if (isMainMenu) {
-                        isMainMenu = false;
-                        startGame();
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -332,6 +314,21 @@ public class GamePanel extends JPanel {
         clip.start();
     }
     
+    private void handleKeyPress(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (isGameOver) {
+                // Logic to return to main menu
+                isGameOver = false;
+                isMainMenu = true;
+                returnToMainMenu();
+            } else if (isMainMenu) {
+                // Logic to start the game from the main menu
+                isMainMenu = false;
+                startGame();
+            }
+        }
+    }
+
     public void loadSounds() {
         String[] soundNames = { "BombComing.wav", "BombDetonating.wav", "ChickenSound.wav", "ChickenSquashed.wav" };
         for (String soundName : soundNames) {
