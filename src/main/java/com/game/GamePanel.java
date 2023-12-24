@@ -235,11 +235,11 @@ public class GamePanel extends JPanel {
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("GAME OVER", getWidth() / 2 - 100, getHeight() / 2 - 50);
+            g.drawString("GAME OVER", 30, 70);
             g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString(message,  getWidth() / 2 - 100, getHeight() / 2 - 20); // score is from GamePanel
-            g.drawString("Score: " + score, getWidth() / 2 - 50, getHeight() / 2); // score is from GamePanel
-            g.drawString("Press SPACE to return to the Main Menu", getWidth() / 2 - 150, getHeight() / 2 + 50);
+            g.drawString(message,  30, 100); // score is from GamePanel
+            g.drawString("Score: " + score, 30, 120); // score is from GamePanel
+            g.drawString("Press SPACE to return to the Main Menu", 30, 140);
         }
     }
 
@@ -252,10 +252,10 @@ public class GamePanel extends JPanel {
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("CHICKS 'N' BOMBS", getWidth() / 2 - 100, getHeight() / 2 - 50);
+            g.drawString("CHICKS 'N' BOMBS", 30, 70);
             g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("HighScore: " + highScore, getWidth() / 2 - 50, getHeight() / 2); // score is from GamePanel
-            g.drawString("Press SPACE to Start", getWidth() / 2 - 150, getHeight() / 2 + 50);
+            g.drawString("HighScore: " + highScore, 30, 100); // score is from GamePanel
+            g.drawString("Press SPACE to Start", 30, 120);
         }
     }
 
