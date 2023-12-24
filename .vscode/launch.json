@@ -14,13 +14,6 @@
             "request": "launch",
             "mainClass": "com.game.ClickGame",
             "projectName": "new_71cf1067"
-        },
-        {
-            "type": "java",
-            "name": "ClickGame",
-            "request": "launch",
-            "mainClass": "src.main.java.com.game.ClickGame",
-            "projectName": "new_71cf1067"
         }
     ]
 }
