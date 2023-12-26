@@ -80,6 +80,9 @@ public class GamePanel extends JPanel {
     }
 
     private void checkMouseOverChicken(int mouseX, int mouseY) {
+        if (isMainMenu || isGameOver || isHowToPlayScreen) {
+            return;
+        }
         for (Entity entity : entities) {
             if (entity instanceof Chicken && isEntityClicked(entity, mouseX, mouseY)) {
                 playSound("ChickenSquashed.wav");
