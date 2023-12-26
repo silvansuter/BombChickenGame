@@ -2,7 +2,7 @@
 
 ## Introduction
 
-BOMBS 'N' CHICKS is a fun Java-based game where players must click on chickens and avoid bombs. The game features random spawns, sounds, and interactive gameplay.
+BOMBS 'N' CHICKS is a fun Java-based game where players must defuse bombs while not squashing any chicken. The game features a main menu, sounds, and tracking of the player's highscore.
 
 ## Gameplay
 
@@ -34,7 +34,8 @@ Written in Java, using Java Swing for the GUI and Java Sound API for the sound h
 
 ## Planned Features
 
-- Animations for Chickens
+- Animations for chickens.
+- Restructuring project for better readibility.
 
 ## Sources
 
