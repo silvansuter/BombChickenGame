@@ -2,6 +2,8 @@ package com.game;
 
 import java.awt.Color;
 
+import java.awt.image.BufferedImage;
+
 public abstract class Entity {
     private int x;
     private int y;
@@ -28,9 +30,15 @@ public abstract class Entity {
         }
     }
 
+    public float getTimeAliveFraction() {
+        return (float) this.timeTillDie / this.startTimeTillDie;
+    }
+
     public boolean isTimeUp() {
         return timeTillDie <= 0;
     }
 
     public abstract Color getColor();
+
+    public abstract BufferedImage getImage();
 }

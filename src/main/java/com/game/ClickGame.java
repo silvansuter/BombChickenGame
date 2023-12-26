@@ -9,6 +9,7 @@ public class ClickGame extends JFrame {
 
     public ClickGame() {
         super("Bombs 'n' Chicks");
+        BombImageCache.init();
         gamePanel = new GamePanel();
         add(gamePanel);
         setSize(WIDTH, HEIGHT);

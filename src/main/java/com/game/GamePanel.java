@@ -23,6 +23,9 @@ import java.io.IOException;
 
 import java.net.URL;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class GamePanel extends JPanel {
     private ArrayList<Entity> entities;
@@ -34,7 +37,9 @@ public class GamePanel extends JPanel {
     private boolean isGameOver;
     private boolean isMainMenu;
     private boolean isHowToPlayScreen;
+
     private boolean muteSounds;
+    private boolean drawHitboxes;
 
     private Map<String, Clip> soundClips = new HashMap<>();
 
@@ -56,6 +61,7 @@ public class GamePanel extends JPanel {
         isGameOver = false;
         isMainMenu = true;
         muteSounds = false;
+        drawHitboxes = false;
 
         loadSounds();
 
@@ -84,7 +90,7 @@ public class GamePanel extends JPanel {
             return;
         }
         for (Entity entity : entities) {
-            if (entity instanceof Chicken && isEntityClicked(entity, mouseX, mouseY)) {
+            if (entity instanceof Chicken && isEntityClicked(entity, mouseX, mouseY) && entity.getTimeAliveFraction() < 0.96) {
                 playSound("ChickenSquashed.wav");
                 gameOver("Squashed a chicken!");
                 break;
@@ -226,6 +232,7 @@ public class GamePanel extends JPanel {
         if (score > highScore) {
             highScore = score;
         }
+        entities = new ArrayList<>();
     
         // Stop the timers
         spawnTimer.stop();
@@ -290,7 +297,7 @@ public class GamePanel extends JPanel {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
             
-            String titleString = "CHICKS 'N' BOMBS";
+            String titleString = "BOMBS 'N' CHICKS";
             Font titleFont = new Font("Arial", Font.BOLD, 40);
             g.setFont(titleFont);
             FontMetrics titleFontMetrics = g.getFontMetrics(titleFont);
@@ -394,8 +401,27 @@ public class GamePanel extends JPanel {
     
         // Draw your entities with anti-aliasing
         for (Entity entity : entities) {
+            BufferedImage image = entity.getImage(); // Get the Bomb.png image
+            if (entity instanceof Bomb) {
+                g2d.drawImage(image, entity.getX()-14, entity.getY()-20, 60, 60, null);
+            }
+            else if (entity instanceof Chicken) {
+                g2d.drawImage(image, entity.getX()-11, entity.getY()-19, 60, 60, null);
+            }
+            
+            if (drawHitboxes) {
+                // Set a semi-transparent color for the hitbox
+                Color hitboxColor = new Color(255, 0, 0, 128); // Red color with 50% transparency
+                g2d.setColor(hitboxColor);
+
+                // Draw the hitbox as a semi-transparent circle over the image
+                g2d.drawOval(entity.getX(), entity.getY(), 30, 30); // Draw the hitbox as an outline
+            }
+            
+            /*
             g2d.setColor(entity.getColor());
             g2d.fillOval(entity.getX(), entity.getY(), 30, 30);
+            */
         }
     
         g2d.setColor(Color.BLACK);
