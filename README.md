@@ -34,7 +34,7 @@ Written in Java, using Java Swing for the GUI and Java Sound API for the sound h
 
 ## Planned Features
 
-- Images and Animations for Bombs and Chickens
+- Animations for Chickens
 
 ## Licensing
 
