@@ -33,6 +33,7 @@ public class GamePanel extends JPanel {
 
     private boolean isGameOver;
     private boolean isMainMenu;
+    private boolean isHowToPlayScreen;
     private boolean muteSounds;
 
     private Map<String, Clip> soundClips = new HashMap<>();
@@ -68,7 +69,24 @@ public class GamePanel extends JPanel {
             }
         });
 
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                checkMouseOverChicken(e.getX(), e.getY());
+            }
+        });
+
         returnToMainMenu();
+    }
+
+    private void checkMouseOverChicken(int mouseX, int mouseY) {
+        for (Entity entity : entities) {
+            if (entity instanceof Chicken && isEntityClicked(entity, mouseX, mouseY)) {
+                playSound("ChickenSquashed.wav");
+                gameOver("Squashed a chicken!");
+                break;
+            }
+        }
     }
 
     private void createMenu() {
@@ -118,7 +136,7 @@ public class GamePanel extends JPanel {
     }
 
     private void scheduleNextSpawn() {
-        int delay = random.nextInt(500, 2000)/speedup(); // Random delay between 500ms to 2000ms
+        int delay = random.nextInt(1500, 2000)/speedup(); // Random delay between 500ms to 2000ms
         spawnTimer = new Timer(delay, e -> spawnEntity());
         spawnTimer.setRepeats(false); // Ensure the timer only triggers once per scheduling
         spawnTimer.start();
@@ -128,7 +146,7 @@ public class GamePanel extends JPanel {
         int pointDiameter = 30;
         int x = random.nextInt(getWidth() - pointDiameter);
         int y = random.nextInt(getHeight() - pointDiameter);
-        int timeTillDie = random.nextInt(350, 500)/speedup();
+        int timeTillDie = random.nextInt(400, 500)/speedup();
         int determineType = random.nextInt(100);
         if (determineType <= 80) {
             entities.add(new Bomb(x, y, timeTillDie));
@@ -244,19 +262,62 @@ public class GamePanel extends JPanel {
     }
 
     private class MainMenuScreen extends JComponent {
+        private Image titleImage;
+    
+        public MainMenuScreen() {
+            try {
+                URL imageUrl = getClass().getResource("/images/TitleImageNew.png"); // Adjust path if necessary
+                ImageIcon icon = new ImageIcon(imageUrl);
+                titleImage = icon.getImage();
+            } catch (Exception e) {
+                e.printStackTrace();
+                titleImage = null;
+            }
+        }
+    
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            // Draw the game over screen
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, getWidth(), getHeight());
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("CHICKS 'N' BOMBS", 30, 70);
-            g.setFont(new Font("Arial", Font.PLAIN, 20));
-            g.drawString("HighScore: " + highScore, 30, 100); // score is from GamePanel
-            g.drawString("Press SPACE to Start", 30, 120);
+    
+            if (titleImage != null) {
+                g.drawImage(titleImage, 0, 0, this.getWidth(), this.getHeight(), this);
+            } else {
+                // Fallback to a plain background if image fails to load
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+            
+            String titleString = "CHICKS 'N' BOMBS";
+            Font titleFont = new Font("Arial", Font.BOLD, 40);
+            g.setFont(titleFont);
+            FontMetrics titleFontMetrics = g.getFontMetrics(titleFont);
+            g.drawString(titleString, getXforMiddle(titleString, titleFontMetrics), 40);
+
+            Font titleScreenFont = new Font("Arial", Font.PLAIN, 20);
+            g.setFont(titleScreenFont);
+            FontMetrics highScoreFontMetrics = g.getFontMetrics(titleScreenFont);
+
+            String pressSpaceString = "Press SPACE to Start";
+            g.drawString(pressSpaceString, getXforMiddle(pressSpaceString, highScoreFontMetrics), 60);
+
+            String highScoreString = "HighScore: " + highScore;
+            g.drawString(highScoreString, getXforMiddle(highScoreString, highScoreFontMetrics), 80);
+
+            g.drawString("'H': Help", 10 , 20);
+
+
+            //g.setColor(Color.BLACK);
+            //g.setFont(new Font("Arial", Font.BOLD, 40));
+            //g.drawString("CHICKS 'N' BOMBS", 200, 40);
+            //g.setFont(new Font("Arial", Font.PLAIN, 20));
+            //g.drawString("HighScore: " + highScore, 30, 100);
+            //g.drawString("Press SPACE to Start", 30, 120);
         }
+    }
+
+    private int getXforMiddle(String titleString, FontMetrics fontMetrics) {
+        int textWidth = fontMetrics.stringWidth(titleString);
+        return (getWidth() - textWidth) / 2; // Calculate X-coordinate for centering
     }
 
     private void returnToMainMenu() {
@@ -269,6 +330,48 @@ public class GamePanel extends JPanel {
         mainMenuScreen.setPreferredSize(new Dimension(800, 600)); // for example
         this.setLayout(new BorderLayout()); // Using BorderLayout for simplicity
         this.add(mainMenuScreen, BorderLayout.CENTER);
+
+        // Refresh the panel
+        this.revalidate();
+        this.repaint();
+
+         // Request focus so the GamePanel can detect key presses
+        requestFocusInWindow();
+    }
+
+    private class HowToPlayScreen extends JComponent {
+
+        public HowToPlayScreen() {
+            super();
+        }
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Draw the game over screen
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("HOW TO PLAY", 30, 70);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("Defuse (click) the bombs.", 30, 120); // score is from GamePanel
+            g.drawString("Do not squash (touch) any chicken.", 30, 140);
+            g.drawString("Press <H> to return to Main Menu.", 30, 160);
+
+        }
+    }
+
+    private void showHowToPlayScreen() {
+        isMainMenu = false;
+        isHowToPlayScreen = true;
+        // Remove all components from the GamePanel
+        this.removeAll();
+
+        // Ensure the MainMenuScreen is visible and added correctly
+        HowToPlayScreen howToPlayScreen = new HowToPlayScreen();
+        howToPlayScreen.setPreferredSize(new Dimension(800, 600)); // for example
+        this.setLayout(new BorderLayout()); // Using BorderLayout for simplicity
+        this.add(howToPlayScreen, BorderLayout.CENTER);
 
         // Refresh the panel
         this.revalidate();
@@ -327,6 +430,15 @@ public class GamePanel extends JPanel {
                 startGame();
             }
         }
+        if (e.getKeyCode() == KeyEvent.VK_H) {
+            if (isMainMenu) {
+                showHowToPlayScreen();
+            }
+            else if (isHowToPlayScreen) {
+                returnToMainMenu();
+            }
+        }
+
     }
 
     public void loadSounds() {
