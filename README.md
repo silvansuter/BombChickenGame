@@ -12,9 +12,9 @@ BOMBS 'N' CHICKS is a fun Java-based game where players must click on chickens a
 
 ## Visual Demonstration
 
-<div style="display: flex; justify-content: center;">
-  <img src="resources/readmeAssets/TitleScreen.png" alt="Title Screen" style="max-width: 50%; padding: 0 20px;" />
-  <img src="resources/readmeAssets/IngameFootage.png" alt="Ingame Footage" style="max-width: 50%; padding: 0 20px;" />
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <img src="resources/readmeAssets/TitleScreen.png" alt="Title Screen" width="45%">
+  <img src="resources/readmeAssets/IngameFootage.png" alt="Ingame Footage" width="45%">
 </div>
 
 ## Installation
