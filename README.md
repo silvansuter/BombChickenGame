@@ -36,6 +36,12 @@ Written in Java, using Java Swing for the GUI and Java Sound API for the sound h
 
 - Animations for Chickens
 
+## Sources
+
+The images were created with [DALL·E 3](https://openai.com/dall-e-3).
+
+The sounds were created by me.
+
 ## Licensing
 
 This project is licensed under the MIT License. This allows others to use, modify, and distribute this software without restriction.
