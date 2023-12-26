@@ -2,34 +2,21 @@ package com.game;
 
 import javax.swing.*;
 
+import com.game.entities.Bomb;
+import com.game.entities.Chicken;
+import com.game.entities.Entity;
+import com.game.entities.EntityManager;
+
 import java.awt.*;
 import java.awt.event.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.HashMap;
-import java.util.Map;
-
 import java.lang.Math;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import java.io.IOException;
 
 import java.net.URL;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class GamePanel extends JPanel {
-    private ArrayList<Entity> entities;
-    private final Random random;
     private int score;
     private int highScore = 0;
     private int timeElapsed = 0;
@@ -41,31 +28,47 @@ public class GamePanel extends JPanel {
     private boolean muteSounds;
     private boolean drawHitboxes;
 
-    private Map<String, Clip> soundClips = new HashMap<>();
+    private EntityManager entityManager;
+    private SoundManager soundManager;
+    private SettingsManager settingsManager;
 
-    private JMenuBar menuBar;
-    private JMenu menu;
-    private JMenuItem menuItemStart;
-    private JMenuItem menuItemExit;
+    private final int panelWidth;
+    private final int panelHeight;
 
-
-    // Initialize and store timers as fields so you can stop them
-    Timer spawnTimer = new Timer(1000, e -> spawnEntity());
-    Timer refreshTimer = new Timer(16, e -> repaint());
-    Timer updateEntitiesTimer = new Timer(16, e -> updateEntities());
+    private int mouseX = 0;
+    private int mouseY = 0;
 
     public GamePanel() {
-        entities = new ArrayList<>();
-        random = new Random();
-        score = 0;
+        settingsManager = new SettingsManager();
+        panelWidth = Integer.parseInt(settingsManager.getSetting("game.window.width"));
+        panelHeight = Integer.parseInt(settingsManager.getSetting("game.window.height"));
+        muteSounds = false;
+
+        soundManager = new SoundManager(muteSounds);
+        entityManager = new EntityManager(soundManager::playSound, this::gameOver, this::refreshPanel, this::updateScore, panelWidth, panelHeight);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //System.out.println("Mouse Pressed at: [" + e.getX() + ", " + e.getY() + "]");
+                entityManager.checkEntityClicked(e.getX(), e.getY());
+            }
+        });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mouseX = e.getX();
+                mouseY = e.getY();
+            }
+        });
+
         isGameOver = false;
         isMainMenu = true;
         muteSounds = false;
         drawHitboxes = false;
 
-        loadSounds();
-
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(panelWidth, panelHeight));
 
         setFocusable(true);
         addKeyListener(new KeyAdapter() {
@@ -75,29 +78,10 @@ public class GamePanel extends JPanel {
             }
         });
 
-        addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                checkMouseOverChicken(e.getX(), e.getY());
-            }
-        });
-
-        returnToMainMenu();
+        showMainMenu();
     }
 
-    private void checkMouseOverChicken(int mouseX, int mouseY) {
-        if (isMainMenu || isGameOver || isHowToPlayScreen) {
-            return;
-        }
-        for (Entity entity : entities) {
-            if (entity instanceof Chicken && isEntityClicked(entity, mouseX, mouseY) && entity.getTimeAliveFraction() < 0.96) {
-                playSound("ChickenSquashed.wav");
-                gameOver("Squashed a chicken!");
-                break;
-            }
-        }
-    }
-
+    /*
     private void createMenu() {
         // Create the menu bar
         menuBar = new JMenuBar();
@@ -115,130 +99,57 @@ public class GamePanel extends JPanel {
         menuItemExit.addActionListener(e -> System.exit(0));
         menu.add(menuItemExit);
     }
+    */
 
     private void startGame() {
         this.removeAll();
-        createMenu();
-        this.add(menuBar, BorderLayout.SOUTH);
 
+        isMainMenu = false;
         isGameOver = false;
+        timeElapsed = 0;
         score = 0;
-        entities = new ArrayList<>();
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                //System.out.println("Mouse Pressed at: [" + e.getX() + ", " + e.getY() + "]");
-                checkEntityClicked(e.getX(), e.getY());
-            }
-        });
+        entityManager.startGame();
 
-        // Timer to spawn points
-        scheduleNextSpawn();
-
-        // Timer for game refresh
-        refreshTimer.start();
-
-        updateEntitiesTimer.start();
+        requestFocusInWindow();
 
         repaint();
     }
 
-    private void scheduleNextSpawn() {
-        int delay = random.nextInt(1500, 2000)/speedup(); // Random delay between 500ms to 2000ms
-        spawnTimer = new Timer(delay, e -> spawnEntity());
-        spawnTimer.setRepeats(false); // Ensure the timer only triggers once per scheduling
-        spawnTimer.start();
+    private void checkMouseOverChicken(int mouseX, int mouseY) {
+        if (isMainMenu || isGameOver || isHowToPlayScreen) {
+            return;
+        }
+        if (entityManager.isMouseOverChicken(mouseX, mouseY)) {
+            soundManager.playSound("ChickenSquashed.wav");
+            gameOver("Squashed a chicken!");
+        }
     }
 
-    private void spawnEntity() {
-        int pointDiameter = 30;
-        int x = random.nextInt(getWidth() - pointDiameter);
-        int y = random.nextInt(getHeight() - pointDiameter);
-        int timeTillDie = random.nextInt(400, 500)/speedup();
-        int determineType = random.nextInt(100);
-        if (determineType <= 80) {
-            entities.add(new Bomb(x, y, timeTillDie));
-            playSound("BombComing.wav");
-        } else {
-            int speedX = random.nextInt(5*speedup());
-            int speedY = random.nextInt(5*speedup());
-            entities.add(new Chicken(x, y, 3*timeTillDie, speedX, speedY));
-            playSound("ChickenSound.wav");
-        }
-        scheduleNextSpawn();
-    }
-    
-    private void updateEntities() {
-        Iterator<Entity> iterator = entities.iterator();
-        while (iterator.hasNext()) {
-            Entity entity = iterator.next();
-            entity.decrementTimeTillDie();
-            if (entity instanceof Bomb && entity.isTimeUp()) {
-                playSound("BombDetonating.wav");
-                gameOver("Bomb exploded!");
-                return;
-            }
-            else if (entity instanceof Chicken) {
-                Chicken chickenEntity = (Chicken) entity;
-                chickenEntity.updatePosition();
-                if (chickenEntity.isTimeUp()) {
-                    iterator.remove();
-                }
-            }
-        }
+    private void refreshPanel() {
         timeElapsed++;
+        entityManager.setSpeedupFactor(speedup());
+        checkMouseOverChicken(mouseX, mouseY);
         repaint();
-    }
-    
-    private void checkEntityClicked(int mouseX, int mouseY) {
-        Iterator<Entity> iterator = entities.iterator();
-
-        //System.out.println("Clicked at: " + mouseX + "," + mouseY);
-
-        while (iterator.hasNext()) {
-            Entity entity = iterator.next();
-            if (isEntityClicked(entity, mouseX, mouseY)) {
-                if (entity instanceof Bomb) {
-                    iterator.remove();
-                    score++;
-                } else if (entity instanceof Chicken) {
-                    playSound("ChickenSquashed.wav");
-                    gameOver("Squashed a chicken!");
-                    return;
-                }
-                break;
-            }
-        }
-        repaint();
-    }
-
-    private boolean isEntityClicked(Entity entity, int mouseX, int mouseY) {
-        double pointRadius = 15; // Assuming each entity is drawn as a circle with this radius (half of the diameter)
-        boolean inCircle = Math.pow(mouseX - entity.getX() - pointRadius, 2) + Math.pow(mouseY - entity.getY() - pointRadius, 2) <= Math.pow(pointRadius, 2);
-        
-        //System.out.println("Clicked at " + entity.getX() + "," + entity.getY() + "?" + inCircle);
-
-        return inCircle;
     }
     
     private int speedup() {
         return (int) (Math.log(timeElapsed/1000+2)/(Math.log(2)));
     }
     
+    private void updateScore() {
+        score++;
+    }
+
     private void gameOver(String message) {
+        entityManager.endGame();
+        
         this.removeAll();
         isGameOver = true;
         if (score > highScore) {
             highScore = score;
         }
-        entities = new ArrayList<>();
-    
-        // Stop the timers
-        spawnTimer.stop();
-        refreshTimer.stop();
-        updateEntitiesTimer.stop();
-    
+
         // Add the game over screen to the panel
         GameOverScreen gameOverScreen = new GameOverScreen(message);
         gameOverScreen.setBounds(0, 0, getWidth(), getHeight());
@@ -330,14 +241,14 @@ public class GamePanel extends JPanel {
         return (getWidth() - textWidth) / 2; // Calculate X-coordinate for centering
     }
 
-    private void returnToMainMenu() {
+    private void showMainMenu() {
         isMainMenu = true;
         // Remove all components from the GamePanel
         this.removeAll();
 
         // Ensure the MainMenuScreen is visible and added correctly
         MainMenuScreen mainMenuScreen = new MainMenuScreen();
-        mainMenuScreen.setPreferredSize(new Dimension(800, 600)); // for example
+        mainMenuScreen.setPreferredSize(new Dimension(panelWidth, panelHeight)); // for example
         this.setLayout(new BorderLayout()); // Using BorderLayout for simplicity
         this.add(mainMenuScreen, BorderLayout.CENTER);
 
@@ -398,52 +309,36 @@ public class GamePanel extends JPanel {
     
         // Enable anti-aliasing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    
-        // Draw your entities with anti-aliasing
-        for (Entity entity : entities) {
-            BufferedImage image = entity.getImage(); // Get the Bomb.png image
-            if (entity instanceof Bomb) {
-                g2d.drawImage(image, entity.getX()-14, entity.getY()-20, 60, 60, null);
-            }
-            else if (entity instanceof Chicken) {
-                g2d.drawImage(image, entity.getX()-11, entity.getY()-19, 60, 60, null);
-            }
-            
-            if (drawHitboxes) {
-                // Set a semi-transparent color for the hitbox
-                Color hitboxColor = new Color(255, 0, 0, 128); // Red color with 50% transparency
-                g2d.setColor(hitboxColor);
+        
+        if (!isMainMenu && !isHowToPlayScreen && ! isGameOver) {
+            // Draw your entities with anti-aliasing
+            for (Entity entity : entityManager.getEntities()) {
+                BufferedImage image = entity.getImage(); // Get the Bomb.png image
+                if (entity instanceof Bomb) {
+                    g2d.drawImage(image, entity.getX()-14, entity.getY()-20, 60, 60, null);
+                }
+                else if (entity instanceof Chicken) {
+                    g2d.drawImage(image, entity.getX()-11, entity.getY()-19, 60, 60, null);
+                }
+                
+                if (drawHitboxes) {
+                    // Set a semi-transparent color for the hitbox
+                    Color hitboxColor = new Color(255, 0, 0, 128); // Red color with 50% transparency
+                    g2d.setColor(hitboxColor);
 
-                // Draw the hitbox as a semi-transparent circle over the image
-                g2d.drawOval(entity.getX(), entity.getY(), 30, 30); // Draw the hitbox as an outline
+                    // Draw the hitbox as a semi-transparent circle over the image
+                    g2d.drawOval(entity.getX(), entity.getY(), 30, 30); // Draw the hitbox as an outline
+                }
+                
+                /*
+                g2d.setColor(entity.getColor());
+                g2d.fillOval(entity.getX(), entity.getY(), 30, 30);
+                */
             }
-            
-            /*
-            g2d.setColor(entity.getColor());
-            g2d.fillOval(entity.getX(), entity.getY(), 30, 30);
-            */
+        
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("Score: " + score, 10, 15);
         }
-    
-        g2d.setColor(Color.BLACK);
-        g2d.drawString("Score: " + score, 10, 15);
-    }
-
-    public void playSound(String soundFileName) {
-        if (muteSounds) {
-            return;
-        }
-
-        Clip clip = soundClips.get(soundFileName);
-        if (clip == null) {
-            System.err.println("Sound not preloaded: " + soundFileName);
-            return;
-        }
-        // If the clip is already playing, stop it and reset it.
-        if (clip.isRunning()) {
-            clip.stop();
-        }
-        clip.setFramePosition(0); // rewind to the beginning
-        clip.start();
     }
     
     private void handleKeyPress(KeyEvent e) {
@@ -452,7 +347,7 @@ public class GamePanel extends JPanel {
                 // Logic to return to main menu
                 isGameOver = false;
                 isMainMenu = true;
-                returnToMainMenu();
+                showMainMenu();
             } else if (isMainMenu) {
                 // Logic to start the game from the main menu
                 isMainMenu = false;
@@ -464,27 +359,9 @@ public class GamePanel extends JPanel {
                 showHowToPlayScreen();
             }
             else if (isHowToPlayScreen) {
-                returnToMainMenu();
+                showMainMenu();
             }
         }
 
-    }
-
-    public void loadSounds() {
-        String[] soundNames = { "BombComing.wav", "BombDetonating.wav", "ChickenSound.wav", "ChickenSquashed.wav" };
-        for (String soundName : soundNames) {
-            try {
-                URL soundURL = getClass().getResource("/sounds/" + soundName);
-                if (soundURL == null) {
-                    throw new IllegalArgumentException("Sound file not found: " + soundName);
-                }
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundURL);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioIn);
-                soundClips.put(soundName, clip);
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.game;
+package com.game.entities;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;

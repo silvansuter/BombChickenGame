@@ -2,6 +2,8 @@ package com.game;
 
 import javax.swing.*;
 
+import com.game.entities.BombImageCache;
+
 public class ClickGame extends JFrame {
     private final int WIDTH = 800;
     private final int HEIGHT = 600;
