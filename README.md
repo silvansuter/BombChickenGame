@@ -32,6 +32,10 @@ TODO.
 
 Written in Java, using Java Swing for the GUI and Java Sound API for the sound handling.
 
+## Planned Features
+
+- Images and Animations for Bombs and Chickens
+
 ## Licensing
 
 This project is licensed under the MIT License. This allows others to use, modify, and distribute this software without restriction.
