@@ -1,11 +1,6 @@
 package com.game;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
 
 public class ClickGame extends JFrame {
     private final int WIDTH = 800;
