@@ -10,8 +10,6 @@ import com.game.entities.EntityManager;
 import java.awt.*;
 import java.awt.event.*;
 
-import java.lang.Math;
-
 import java.net.URL;
 
 import java.awt.image.BufferedImage;
@@ -118,13 +116,9 @@ public class GamePanel extends JPanel {
 
     private void refreshPanel() {
         timeElapsed++;
-        entityManager.setSpeedupFactor(speedup());
+        entityManager.setSpeedupFactor(HelperFunctions.computeSpeedup(timeElapsed));
         checkMouseOverChicken(mouseX, mouseY);
         repaint();
-    }
-    
-    private int speedup() {
-        return (int) (Math.log(timeElapsed/1000+2)/(Math.log(2)));
     }
     
     private void updateScore() {
@@ -202,17 +196,17 @@ public class GamePanel extends JPanel {
             Font titleFont = new Font("Arial", Font.BOLD, 40);
             g.setFont(titleFont);
             FontMetrics titleFontMetrics = g.getFontMetrics(titleFont);
-            g.drawString(titleString, getXforMiddle(titleString, titleFontMetrics), 40);
+            g.drawString(titleString, HelperFunctions.getXForCenteringText(titleString, titleFontMetrics), 40);
 
             Font titleScreenFont = new Font("Arial", Font.PLAIN, 20);
             g.setFont(titleScreenFont);
             FontMetrics highScoreFontMetrics = g.getFontMetrics(titleScreenFont);
 
             String pressSpaceString = "Press SPACE to Start";
-            g.drawString(pressSpaceString, getXforMiddle(pressSpaceString, highScoreFontMetrics), 60);
+            g.drawString(pressSpaceString, HelperFunctions.getXForCenteringText(pressSpaceString, highScoreFontMetrics), 60);
 
             String highScoreString = "HighScore: " + scoreManager.getHighScore();
-            g.drawString(highScoreString, getXforMiddle(highScoreString, highScoreFontMetrics), 80);
+            g.drawString(highScoreString, HelperFunctions.getXForCenteringText(highScoreString, highScoreFontMetrics), 80);
 
             g.drawString("'H': Help", 10 , 20);
 
@@ -224,11 +218,6 @@ public class GamePanel extends JPanel {
             //g.drawString("HighScore: " + highScore, 30, 100);
             //g.drawString("Press SPACE to Start", 30, 120);
         }
-    }
-
-    private int getXforMiddle(String titleString, FontMetrics fontMetrics) {
-        int textWidth = fontMetrics.stringWidth(titleString);
-        return (getWidth() - textWidth) / 2; // Calculate X-coordinate for centering
     }
 
     private void showMainMenu() {
