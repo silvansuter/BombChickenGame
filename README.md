@@ -17,9 +17,23 @@ BOMBS 'N' CHICKS is a fun Java-based game where players must defuse bombs while 
   <img src="resources/readmeAssets/IngameFootage.png" alt="Ingame Footage" width="45%">
 </div>
 
-## Installation
 
-TODO.
+## Requirements to Run the Application
+
+To successfully run this application, the following requirements must be met:
+
+### Software Requirements
+
+- **Java Runtime Environment (JRE)**: Java 8 (1.8) or higher.
+  - The application uses features and APIs available in Java 8, including Swing and AWT libraries for the graphical user interface. It is compatible with Java 8 and newer versions.
+  - Ensure that Java is installed on your system. You can check your Java version by running `java -version` in your command line or terminal.
+  - If you do not have Java installed, or if your version is older than Java 8, you can download the latest version of Java from [Oracle's official website](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) or use an open-source alternative like [AdoptOpenJDK](https://adoptopenjdk.net/).
+
+### Running the Application
+
+1. Download the application's project directory.
+2. Compile the project using a Java compiler.
+3. Run the "BombsNChicksMain"-file.
 
 ## Features
 
