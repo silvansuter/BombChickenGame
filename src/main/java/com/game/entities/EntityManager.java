@@ -104,7 +104,14 @@ public class EntityManager {
             onPlaySound.accept("BombComing.wav");
         } else {
             int speedX = random.nextInt(5*speedup);
-            int speedY = random.nextInt(5*speedup);
+            int speedY;
+            // Do not allow the chicken to be stationary
+            if (speedX == 0) {
+                speedY = random.nextInt(1, 5*speedup);
+            }
+            else {
+                speedY = random.nextInt(5*speedup);
+            }
             entities.add(new Chicken(x, y, 3*timeTillDie, speedX, speedY));
             onPlaySound.accept("ChickenSound.wav");
         }
