@@ -10,6 +10,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "BombsNChicksMain",
+            "request": "launch",
+            "mainClass": "com.game.BombsNChicksMain",
+            "projectName": "new_71cf1067"
+        },
+        {
+            "type": "java",
             "name": "ClickGame",
             "request": "launch",
             "mainClass": "com.game.ClickGame",
