@@ -5,15 +5,16 @@ import java.util.Properties;
 import java.io.InputStream;
 
 public class SettingsManager {
-    private Properties settings;
+    private static Properties settings = new Properties();
 
-    public SettingsManager() {
+    static {
         loadSettings();
     }
 
-    private void loadSettings() {
-        settings = new Properties();
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream("settings.properties")) {
+    public static void init() {}
+
+    private static void loadSettings() {
+        try (InputStream in = SettingsManager.class.getClassLoader().getResourceAsStream("settings.properties")) {
             if (in == null) {
                 throw new IOException("Cannot find 'settings.properties'");
             }
@@ -23,8 +24,7 @@ public class SettingsManager {
         }
     }
 
-    public String getSetting(String key) {
+    public static String getSetting(String key) {
         return settings.getProperty(key);
     }
 }
-
