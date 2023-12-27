@@ -20,7 +20,6 @@ public class GamePanel extends JPanel {
     private String applicationStatus;
 
     private boolean muteSounds;
-    private boolean drawHitboxes;
 
     private EntityManager entityManager;
     private SoundManager soundManager;
@@ -57,7 +56,6 @@ public class GamePanel extends JPanel {
             }
         });
 
-        drawHitboxes = false;
         applicationStatus = "mainMenu";
 
         setPreferredSize(new Dimension(panelWidth, panelHeight));
@@ -300,7 +298,7 @@ public class GamePanel extends JPanel {
                     g2d.drawImage(image, entity.getX()-11, entity.getY()-19, 60, 60, null);
                 }
                 
-                if (drawHitboxes) {
+                if (Boolean.parseBoolean(SettingsManager.getSetting("game.hitboxes"))) {
                     // Set a semi-transparent color for the hitbox
                     Color hitboxColor = new Color(255, 0, 0, 128); // Red color with 50% transparency
                     g2d.setColor(hitboxColor);
