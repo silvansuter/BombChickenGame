@@ -17,8 +17,6 @@ import java.net.URL;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel {
-    private int score;
-    private int highScore = 0;
     private int timeElapsed = 0;
 
     private String applicationStatus;
@@ -28,6 +26,7 @@ public class GamePanel extends JPanel {
 
     private EntityManager entityManager;
     private SoundManager soundManager;
+    private ScoreManager scoreManager;
 
     private final int panelWidth;
     private final int panelHeight;
@@ -42,6 +41,7 @@ public class GamePanel extends JPanel {
 
         soundManager = new SoundManager(muteSounds);
         entityManager = new EntityManager(soundManager::playSound, this::gameOver, this::refreshPanel, this::updateScore, panelWidth, panelHeight);
+        scoreManager = new ScoreManager();
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -100,7 +100,7 @@ public class GamePanel extends JPanel {
 
         applicationStatus = "in game";
         timeElapsed = 0;
-        score = 0;
+        scoreManager.resetCurrentScore();
 
         entityManager.startGame();
 
@@ -128,7 +128,7 @@ public class GamePanel extends JPanel {
     }
     
     private void updateScore() {
-        score++;
+        scoreManager.updateScore();
     }
 
     private void gameOver(String message) {
@@ -136,8 +136,8 @@ public class GamePanel extends JPanel {
         entityManager.endGame();
         this.removeAll();
 
-        if (score > highScore) {
-            highScore = score;
+        if (scoreManager.getCurrentScore() > scoreManager.getHighScore()) {
+            scoreManager.saveHighScore(scoreManager.getCurrentScore());
         }
 
         // Add the game over screen to the panel
@@ -167,7 +167,7 @@ public class GamePanel extends JPanel {
             g.drawString("GAME OVER", 30, 70);
             g.setFont(new Font("Arial", Font.PLAIN, 20));
             g.drawString(message,  30, 100); // score is from GamePanel
-            g.drawString("Score: " + score, 30, 120); // score is from GamePanel
+            g.drawString("Score: " + scoreManager.getCurrentScore(), 30, 120); // score is from GamePanel
             g.drawString("Press SPACE to return to the Main Menu", 30, 140);
         }
     }
@@ -211,7 +211,7 @@ public class GamePanel extends JPanel {
             String pressSpaceString = "Press SPACE to Start";
             g.drawString(pressSpaceString, getXforMiddle(pressSpaceString, highScoreFontMetrics), 60);
 
-            String highScoreString = "HighScore: " + highScore;
+            String highScoreString = "HighScore: " + scoreManager.getHighScore();
             g.drawString(highScoreString, getXforMiddle(highScoreString, highScoreFontMetrics), 80);
 
             g.drawString("'H': Help", 10 , 20);
@@ -327,7 +327,7 @@ public class GamePanel extends JPanel {
             }
         
             g2d.setColor(Color.BLACK);
-            g2d.drawString("Score: " + score, 10, 15);
+            g2d.drawString("Score: " + scoreManager.getCurrentScore(), 10, 15);
         }
     }
     
