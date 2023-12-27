@@ -21,16 +21,13 @@ public class GamePanel extends JPanel {
     private int highScore = 0;
     private int timeElapsed = 0;
 
-    private boolean isGameOver;
-    private boolean isMainMenu;
-    private boolean isHowToPlayScreen;
+    private String applicationStatus;
 
     private boolean muteSounds;
     private boolean drawHitboxes;
 
     private EntityManager entityManager;
     private SoundManager soundManager;
-    private SettingsManager settingsManager;
 
     private final int panelWidth;
     private final int panelHeight;
@@ -39,9 +36,8 @@ public class GamePanel extends JPanel {
     private int mouseY = 0;
 
     public GamePanel() {
-        settingsManager = new SettingsManager();
-        panelWidth = Integer.parseInt(settingsManager.getSetting("game.window.width"));
-        panelHeight = Integer.parseInt(settingsManager.getSetting("game.window.height"));
+        panelWidth = Integer.parseInt(SettingsManager.getSetting("game.window.width"));
+        panelHeight = Integer.parseInt(SettingsManager.getSetting("game.window.height"));
         muteSounds = false;
 
         soundManager = new SoundManager(muteSounds);
@@ -63,10 +59,8 @@ public class GamePanel extends JPanel {
             }
         });
 
-        isGameOver = false;
-        isMainMenu = true;
-        muteSounds = false;
         drawHitboxes = false;
+        applicationStatus = "mainMenu";
 
         setPreferredSize(new Dimension(panelWidth, panelHeight));
 
@@ -104,8 +98,7 @@ public class GamePanel extends JPanel {
     private void startGame() {
         this.removeAll();
 
-        isMainMenu = false;
-        isGameOver = false;
+        applicationStatus = "in game";
         timeElapsed = 0;
         score = 0;
 
@@ -117,10 +110,7 @@ public class GamePanel extends JPanel {
     }
 
     private void checkMouseOverChicken(int mouseX, int mouseY) {
-        if (isMainMenu || isGameOver || isHowToPlayScreen) {
-            return;
-        }
-        if (entityManager.isMouseOverChicken(mouseX, mouseY)) {
+        if (applicationStatus == "in game" && entityManager.isMouseOverChicken(mouseX, mouseY)) {
             soundManager.playSound("ChickenSquashed.wav");
             gameOver("Squashed a chicken!");
         }
@@ -142,10 +132,10 @@ public class GamePanel extends JPanel {
     }
 
     private void gameOver(String message) {
+        applicationStatus = "game over";
         entityManager.endGame();
-        
         this.removeAll();
-        isGameOver = true;
+
         if (score > highScore) {
             highScore = score;
         }
@@ -242,7 +232,8 @@ public class GamePanel extends JPanel {
     }
 
     private void showMainMenu() {
-        isMainMenu = true;
+        applicationStatus = "main menu";
+
         // Remove all components from the GamePanel
         this.removeAll();
 
@@ -283,8 +274,7 @@ public class GamePanel extends JPanel {
     }
 
     private void showHowToPlayScreen() {
-        isMainMenu = false;
-        isHowToPlayScreen = true;
+        applicationStatus = "how to play screen";
         // Remove all components from the GamePanel
         this.removeAll();
 
@@ -310,7 +300,7 @@ public class GamePanel extends JPanel {
         // Enable anti-aliasing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        if (!isMainMenu && !isHowToPlayScreen && ! isGameOver) {
+        if (applicationStatus == "in game") {
             // Draw your entities with anti-aliasing
             for (Entity entity : entityManager.getEntities()) {
                 BufferedImage image = entity.getImage(); // Get the Bomb.png image
@@ -343,22 +333,18 @@ public class GamePanel extends JPanel {
     
     private void handleKeyPress(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (isGameOver) {
+            if (applicationStatus == "game over") {
                 // Logic to return to main menu
-                isGameOver = false;
-                isMainMenu = true;
                 showMainMenu();
-            } else if (isMainMenu) {
-                // Logic to start the game from the main menu
-                isMainMenu = false;
+            } else if (applicationStatus == "main menu") {
                 startGame();
             }
         }
         if (e.getKeyCode() == KeyEvent.VK_H) {
-            if (isMainMenu) {
+            if (applicationStatus == "main menu") {
                 showHowToPlayScreen();
             }
-            else if (isHowToPlayScreen) {
+            else if (applicationStatus == "how to play screen") {
                 showMainMenu();
             }
         }
