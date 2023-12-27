@@ -5,14 +5,14 @@ import javax.swing.*;
 import com.game.entities.BombImageCache;
 
 public class BombsNChicksMain extends JFrame {
-    private final GamePanel gamePanel;
+    private final GameGUI gameGUI;
 
     public BombsNChicksMain() {
         super("Bombs 'n' Chicks");
         SettingsManager.init();
         BombImageCache.init();
-        gamePanel = new GamePanel();
-        add(gamePanel);
+        gameGUI = new GameGUI();
+        add(gameGUI);
         setSize(Integer.parseInt(SettingsManager.getSetting("game.window.width")), Integer.parseInt(SettingsManager.getSetting("game.window.height")));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
