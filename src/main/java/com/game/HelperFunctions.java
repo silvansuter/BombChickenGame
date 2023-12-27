@@ -13,8 +13,8 @@ public class HelperFunctions {
         someStaticVariable = 0;
     }
 
-    public static int computeSpeedup(int timeElapsed) {
-        return (int) (Math.log(timeElapsed/1000+2)/(Math.log(2)));
+    public static double computeSpeedup(int timeElapsed) {
+        return (Math.log(timeElapsed/1000+2)/(Math.log(2)));
     }
 
     public static int getXForCenteringText(String titleString, FontMetrics fontMetrics) {

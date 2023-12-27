@@ -22,7 +22,7 @@ public class EntityManager {
     private int panelWidth;
     private int panelHeight;
 
-    private int speedup;
+    private double speedup;
 
     private Timer updateEntitiesTimer;
     private Timer spawnTimer;
@@ -83,13 +83,13 @@ public class EntityManager {
             return; // Don't schedule if the game has ended
         }
     
-        int delay = random.nextInt(1500, 2000) / speedup; // Random delay between 500ms to 2000ms
+        int delay = (int) Math.round(random.nextInt(1500, 2000) / speedup); // Random delay between 500ms to 2000ms
         spawnTimer = new Timer(delay, e -> spawnEntity());
         spawnTimer.setRepeats(false); // Ensure the timer only triggers once per scheduling
         spawnTimer.start();
     }
 
-    public void setSpeedupFactor(int speedup) {
+    public void setSpeedupFactor(double speedup) {
         this.speedup = speedup;
     }
 
@@ -97,20 +97,20 @@ public class EntityManager {
         int pointDiameter = 30;
         int x = random.nextInt(panelWidth - pointDiameter);
         int y = random.nextInt(panelHeight - pointDiameter);
-        int timeTillDie = random.nextInt(400, 500)/speedup;
+        int timeTillDie = (int) Math.round(random.nextInt(400, 500)/speedup);
         int determineType = random.nextInt(100);
         if (determineType <= 80) {
             entities.add(new Bomb(x, y, timeTillDie));
             onPlaySound.accept("BombComing.wav");
         } else {
-            int speedX = random.nextInt(5*speedup);
+            int speedX = (int) Math.round(random.nextDouble(5*speedup));
             int speedY;
             // Do not allow the chicken to be stationary
             if (speedX == 0) {
-                speedY = random.nextInt(1, 5*speedup);
+                speedY = (int) Math.round(random.nextDouble(1, 5*speedup));
             }
             else {
-                speedY = random.nextInt(5*speedup);
+                speedY = (int) Math.round(random.nextDouble(5*speedup));
             }
             entities.add(new Chicken(x, y, 3*timeTillDie, speedX, speedY));
             onPlaySound.accept("ChickenSound.wav");
