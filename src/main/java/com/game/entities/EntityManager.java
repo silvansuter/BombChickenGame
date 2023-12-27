@@ -2,30 +2,11 @@ package com.game.entities;
 
 import javax.swing.*;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.HashMap;
-import java.util.Map;
 
 import java.lang.Math;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import java.io.IOException;
-
-import java.net.URL;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 import java.util.function.Consumer;
 
