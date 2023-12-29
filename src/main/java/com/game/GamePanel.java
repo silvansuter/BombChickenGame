@@ -10,8 +10,6 @@ import java.util.ArrayList;
 public class GamePanel {
     private int timeElapsed = 0;
 
-    private String applicationStatus;
-
     private EntityManager entityManager;
     private ScoreManager scoreManager;
 
@@ -28,8 +26,6 @@ public class GamePanel {
 
         entityManager = new EntityManager(onPlaySound, this::gameOver, onRefreshPanel, this::updateScore, panelWidth, panelHeight);
         scoreManager = new ScoreManager();
-
-        applicationStatus = "mainMenu";
     }
 
     /*
@@ -53,7 +49,6 @@ public class GamePanel {
     */
 
     public void startGame() {
-        applicationStatus = "in game";
         timeElapsed = 0;
         scoreManager.resetCurrentScore();
 
@@ -61,7 +56,6 @@ public class GamePanel {
     }
 
     public void gameOver(String message) {
-        applicationStatus = "game over";
         onGameOver.accept(message);
         entityManager.endGame();
     }
@@ -72,9 +66,7 @@ public class GamePanel {
     }
 
     public void checkMouseOverChicken(int mouseX, int mouseY) {
-        if (applicationStatus == "in game") {
-            entityManager.isMouseOverChicken(mouseX, mouseY);
-        }
+        entityManager.isMouseOverChicken(mouseX, mouseY);
     }
     
     private void updateScore() {
