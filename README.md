@@ -49,6 +49,10 @@ To successfully run this application, the following requirements must be met:
 
 Written in Java, using Java Swing for the GUI and Java Sound API for the sound handling.
 
+## Known Issues
+
+- When running the game from a MacBook Air M1, enabling the game sound and using it over AirPods Pro 2nd gen leads to performance issues.
+
 ## Planned Features
 
 - Animations for chickens.
