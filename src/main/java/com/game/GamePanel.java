@@ -12,10 +12,7 @@ public class GamePanel {
 
     private String applicationStatus;
 
-    private boolean muteSounds;
-
     private EntityManager entityManager;
-    private SoundManager soundManager;
     private ScoreManager scoreManager;
 
     private Consumer<String> onGameOver;
@@ -28,9 +25,7 @@ public class GamePanel {
 
         panelWidth = Integer.parseInt(SettingsManager.getSetting("game.window.width"));
         panelHeight = Integer.parseInt(SettingsManager.getSetting("game.window.height"));
-        muteSounds = false;
 
-        soundManager = new SoundManager(muteSounds);
         entityManager = new EntityManager(onPlaySound, this::gameOver, onRefreshPanel, this::updateScore, panelWidth, panelHeight);
         scoreManager = new ScoreManager();
 
@@ -77,9 +72,8 @@ public class GamePanel {
     }
 
     public void checkMouseOverChicken(int mouseX, int mouseY) {
-        if (applicationStatus == "in game" && entityManager.isMouseOverChicken(mouseX, mouseY)) {
-            soundManager.playSound("ChickenSquashed.wav");
-            gameOver("Squashed a chicken!");
+        if (applicationStatus == "in game") {
+            entityManager.isMouseOverChicken(mouseX, mouseY);
         }
     }
     
@@ -109,5 +103,9 @@ public class GamePanel {
 
     public double computeSpeedup() {
         return HelperFunctions.computeSpeedup(timeElapsed);
+    }
+
+    public int getTimeElapsed() {
+        return timeElapsed;
     }
 }
