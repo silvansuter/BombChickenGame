@@ -1,18 +1,7 @@
 package com.game;
 
-import javax.swing.*;
-
-import com.game.entities.Bomb;
-import com.game.entities.Chicken;
 import com.game.entities.Entity;
 import com.game.entities.EntityManager;
-
-import java.awt.*;
-import java.awt.event.*;
-
-import java.net.URL;
-
-import java.awt.image.BufferedImage;
 
 import java.util.function.Consumer;
 

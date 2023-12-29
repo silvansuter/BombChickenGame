@@ -1,13 +1,8 @@
 package com.game.entities;
 
 import java.awt.Color;
-import java.util.*;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class Bomb extends Entity {
 
