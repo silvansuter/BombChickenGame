@@ -1,2 +1,19 @@
-highscore.txt
+# Class files
 *.class
+
+# Maven generated files
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# IDE related files
+.vscode/
+
+# Other files
+highscore.txt
+
+# MacOS
+.DS_Store
