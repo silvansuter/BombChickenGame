@@ -23,8 +23,8 @@ BOMBS 'N' CHICKS is a Java-based game where players must defuse bombs while bein
 ## Visual Demonstration
 
 <div style="display: flex; justify-content: space-between; align-items: center;">
-  <img src="resources/readmeAssets/TitleScreen.png" alt="Title Screen" width="45%">
-  <img src="resources/readmeAssets/IngameFootage.png" alt="Ingame Footage" width="45%">
+  <img src="readmeAssets/TitleScreen.png" alt="Title Screen" width="45%">
+  <img src="readmeAssets/IngameFootage.png" alt="Ingame Footage" width="45%">
 </div>
 
 
