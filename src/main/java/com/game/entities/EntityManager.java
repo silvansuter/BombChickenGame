@@ -130,23 +130,18 @@ public class EntityManager {
                     iterator.remove();
                     onScoreUpdate.run();
                 }
-                else if (entity instanceof Chicken) {
-                    onPlaySound.accept("ChickenSquashed.wav");
-                    onGameOver.accept("Squashed a chicken!");
-                    return;
-                }
                 break;
             }
         }
     }
 
-    public boolean isMouseOverChicken(int mouseX, int mouseY) {
+    public void isMouseOverChicken(int mouseX, int mouseY) {
         for (Entity entity : entities) {
             if (entity instanceof Chicken && isMouseOnEntity(entity, mouseX, mouseY) && entity.getTimeAliveFraction() < 0.96) {
-                return true;
+                onPlaySound.accept("ChickenSquashed.wav");
+                onGameOver.accept("Squashed a chicken!");
             }
         }
-        return false;
     }
 
     private boolean isMouseOnEntity(Entity entity, int mouseX, int mouseY) {
