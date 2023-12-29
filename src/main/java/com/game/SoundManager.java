@@ -54,5 +54,11 @@ public class SoundManager {
         this.muteSounds = mute;
     }
 
-    // Add other necessary methods as required
+    public Map<String, Clip> getSoundClips() {
+        return soundClips;
+    }
+
+    public boolean getMuteSounds() {
+        return muteSounds;
+    }
 }
