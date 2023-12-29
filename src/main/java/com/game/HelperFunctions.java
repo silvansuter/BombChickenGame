@@ -3,14 +3,8 @@ package com.game;
 import java.awt.FontMetrics;
 
 public class HelperFunctions {
-    
-    // Static variables
-    static int someStaticVariable;
 
-    // Static block
     static {
-        // This block is executed when the class is loaded.
-        someStaticVariable = 0;
     }
 
     public static double computeSpeedup(int timeElapsed) {
