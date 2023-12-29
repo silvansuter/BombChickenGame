@@ -17,3 +17,6 @@ highscore.txt
 
 # MacOS
 .DS_Store
+
+# Unit tests
+src/test/
