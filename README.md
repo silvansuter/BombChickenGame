@@ -2,12 +2,13 @@
 
 ## Introduction
 
-BOMBS 'N' CHICKS is a fun Java-based game where players must defuse bombs while not squashing any chicken. The game features a main menu, sounds, and tracking of the player's highscore.
+BOMBS 'N' CHICKS is a Java-based game where players must defuse bombs while being careful to not squashing any chicken. The game features random spawns, visuals, audio, a main menu, and tracking of the player's highscore.
 
 ## Gameplay
 
 - Click on Bombs before they detonate to gain points.
-- Be aware to not squash any chickens.
+- Do not squash any chickens while detonating the bombs. But be careful, they run around!
+- The game's difficulty steadily increases. 
 - Survive as long as possible to beat your highscore.
 
 ## Visual Demonstration
@@ -33,14 +34,16 @@ To successfully run this application, the following requirements must be met:
 
 1. Download the application's project directory.
 2. Compile the project using a Java compiler.
-3. Run the "BombsNChicksMain"-file.
+3. Execute main method from the "BombsNChicksMain.java"-file.
 
 ## Features
 
-- Dynamic spawning of bombs and chickens.
+- Separated GUI and Game logic entirely.
+- Dynamic random spawning of bombs and chickens. Bombs continuously turn redder until they explode. The chickens run around.
+- Sound and images, simple animations for the bombs.
 - Main menu, game over and help screens.
-- Score tracking.
-- Increased difficulty over time.
+- Score tracking. Saving the highscore even after closing the game.
+- Increased difficulty over time by speeding up the spawning rate, the chickens, and the time until bombs explode.
 
 ## Development
 
@@ -49,7 +52,9 @@ Written in Java, using Java Swing for the GUI and Java Sound API for the sound h
 ## Planned Features
 
 - Animations for chickens.
-- Restructuring project for better readibility.
+- ~~Restructuring project for better readibility.~~
+- Sounds for ingame and for the main menu.
+- AI that learns to play the game.
 
 ## Sources
 
