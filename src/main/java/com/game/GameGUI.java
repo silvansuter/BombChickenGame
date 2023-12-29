@@ -31,7 +31,7 @@ public class GameGUI extends JPanel {
         panelWidth = Integer.parseInt(SettingsManager.getSetting("game.window.width"));
         panelHeight = Integer.parseInt(SettingsManager.getSetting("game.window.height"));
 
-        muteSounds = false;
+        muteSounds = Boolean.parseBoolean(SettingsManager.getSetting("sound.muted"));
         soundManager = new SoundManager(muteSounds);
         gamePanel = new GamePanel(this::gameOver, soundManager::playSound, this::refreshPanel);
 
@@ -262,8 +262,12 @@ public class GameGUI extends JPanel {
         
             g2d.setColor(Color.BLACK);
             g2d.drawString("Score: " + gamePanel.getCurrentScore(), 10, 15);
-            g2d.drawString("Speedup: " + gamePanel.computeSpeedup(), 80, 15);
-
+            if (Boolean.parseBoolean(SettingsManager.getSetting("game.showSpeedup"))) {
+                g2d.drawString("Speedup: " + String.format("%.2f", gamePanel.computeSpeedup()), 80, 15);
+            }
+            if (Boolean.parseBoolean(SettingsManager.getSetting("game.showTimeElapsed"))) {
+                g2d.drawString("TimeElapsed: " + gamePanel.getTimeElapsed(), 300, 15);
+            }
         }
     }
     
