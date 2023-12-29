@@ -19,16 +19,12 @@ public class GamePanel {
     private ScoreManager scoreManager;
 
     private Consumer<String> onGameOver;
-    private Consumer<String> onPlaySound;
-    private Runnable onRefreshPanel;
 
     private final int panelWidth;
     private final int panelHeight;
 
     public GamePanel(Consumer<String> onGameOver, Consumer<String> onPlaySound, Runnable onRefreshPanel) {
         this.onGameOver = onGameOver;
-        this.onPlaySound = onPlaySound;
-        this.onRefreshPanel = onRefreshPanel;
 
         panelWidth = Integer.parseInt(SettingsManager.getSetting("game.window.width"));
         panelHeight = Integer.parseInt(SettingsManager.getSetting("game.window.height"));
